@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ep01</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --card-bg: #161b22;
+  --card-border: #30363d;
+  --text: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent: #58a6ff;
+  --dialogue-bg: rgba(88,166,255,0.08);
+  --dialogue-color: #79c0ff;
+  --part-num-color: #f0883e;
+  --camera-bg: rgba(139,148,158,0.08);
+  --header-gradient: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 16px;
+}
+/* Header */
+.page-header {
+  background: var(--header-gradient);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.page-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #58a6ff, #bc8cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.meta-tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: rgba(88,166,255,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(88,166,255,0.2);
+}
+/* Collapsible sections */
+details {
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: var(--card-bg);
+}
+details summary {
+  padding: 14px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  user-select: none;
+}
+details summary:hover { color: var(--text); }
+details[open] summary { border-bottom: 1px solid var(--card-border); }
+.section-body {
+  padding: 12px 16px;
+}
+/* Character items */
+.char-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  font-size: 14px;
+}
+.char-item:last-child { border-bottom: none; }
+.char-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.char-desc {
+  display: block;
+  margin-top: 4px;
+  margin-left: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+/* Scene items */
+.scene-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  font-size: 14px;
+}
+.scene-item:last-child { border-bottom: none; }
+.scene-desc {
+  display: block;
+  margin-top: 4px;
+  margin-left: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+/* Segment card */
+.segment-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.segment-card:hover {
+  border-color: rgba(88,166,255,0.4);
+}
+.segment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 8px;
+}
+.segment-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.segment-dur {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: rgba(240,136,62,0.12);
+  color: var(--part-num-color);
+}
+.segment-meta {
+  padding: 0 16px 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+/* Physical state inside segment */
+.segment-card .physical-state {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  border-top: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  background: rgba(139,148,158,0.03);
+}
+.segment-card .physical-state summary {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.ps-item {
+  padding: 4px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+/* Parts */
+.parts-container {
+  padding: 10px 16px 6px;
+}
+.part-line {
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 1.8;
+  border-bottom: 1px solid rgba(48,54,61,0.3);
+}
+.part-line:last-child { border-bottom: none; }
+.part-num {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--part-num-color);
+  background: rgba(240,136,62,0.1);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.char-tag {
+  font-weight: 600;
+}
+.dialogue {
+  color: var(--dialogue-color);
+  background: var(--dialogue-bg);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-style: italic;
+}
+/* Camera */
+.camera-line {
+  padding: 8px 16px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--camera-bg);
+  border-top: 1px solid var(--card-border);
+}
+/* Stats */
+.stats-bar {
+  text-align: center;
+  padding: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.stats-bar span {
+  margin: 0 8px;
+}
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .container { padding: 10px; }
+  .page-header { padding: 18px 14px; }
+  .page-header h1 { font-size: 19px; }
+  .part-line { font-size: 14px; }
+  .segment-header { padding: 10px 12px 6px; }
+  .parts-container { padding: 8px 12px 4px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="page-header">
+  <h1>ep01</h1>
+  <div class="meta-tags">
+    <span class="meta-tag">🎬 realistic</span>
+    <span class="meta-tag">🌍 修仙世界·清风宗·古代仙山（底层为赛博数据流）</span>
+    <span class="meta-tag">🎨 拟真人漫画风格，古代东方仙山与赛博数据流融合，青翠竹林山门被半透明蓝绿色代码矩阵...</span>
+    <span class="meta-tag">📊 17 segments</span>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <span>👤 4 角色</span>
+  <span>🏞️ 6 场景</span>
+  <span>🎬 17 分镜</span>
+</div>
+
+<details>
+  <summary>👤 角色设定 (4)</summary>
+  <div class="section-body"><div class="char-item"><span class="char-dot" style="background:#e74c3c"></span><strong>[陈默]</strong><span class="char-desc">25岁男性（重生后外貌），身高178cm偏瘦体型，面色苍白眼下有明显黑眼圈（前世熬夜后遗症），方脸棱角清晰但带着一股疲惫的颓废感，黑色短发微乱像刚睡醒，眉毛浓但不整齐，薄唇常年微抿。穿青灰色粗布道袍但总挽着袖子露出小臂，腰间别着一块刻有"外门"字样的木牌。眼神看似散漫实则精光暗藏。站姿微驼，习惯性双手抱胸或插袖子。</span></div>
+<div class="char-item"><span class="char-dot" style="background:#3498db"></span><strong>[苏灵]</strong><span class="char-desc">22岁女性，身高165cm纤细偏结实体型，小麦色皮肤透着健康光泽，鹅蛋脸五官精致英气，丹凤眼目光锐利，黑色长发高束马尾扎得一丝不苟，穿水蓝色内门弟子道袍腰系深蓝布带，左肩斜挎一个鼓鼓囊囊的棕色布包（装满丹药瓶），右手常握一本发黄的丹方古籍。表情认真严肃，皱眉时鼻梁微皱。</span></div>
+<div class="char-item"><span class="char-dot" style="background:#2ecc71"></span><strong>[赵天行]</strong><span class="char-desc">27岁男性，身高185cm健壮体型，皮肤古铜色线条分明，国字脸浓眉大眼鼻梁高挺下颌刚毅，黑色长发束高冠用白玉簪固定，穿白色内门首席弟子道袍金线镶边，腰悬三尺青锋剑，走路带风。表情傲慢，说话时下巴微扬。右手习惯性握剑柄。</span></div>
+<div class="char-item"><span class="char-dot" style="background:#f39c12"></span><strong>[李无尘]</strong><span class="char-desc">外貌60余岁的老者（实际300岁），身高170cm清瘦体型，满头银白长发披散至腰，面容清矍皱纹如刀刻，三缕长须垂胸，眉毛花白极长遮住眼睛需用手拨开才露出浑浊又深邃的双目，穿深灰色长老道袍绣有暗银云纹，右手持一根黑色铁木拐杖顶端镶嵌暗淡灵石。驼背但气势沉稳如山。</span></div>
+</div>
+</details>
+
+<details>
+  <summary>🏞️ 场景描述 (6)</summary>
+  <div class="section-body"><div class="scene-item"><strong>[996办公室-夜]</strong><span class="scene-desc">现代互联网公司深夜加班场景，开放式工位只剩一盏台灯亮着，显示器上是密密麻麻的代码和训练损失曲线，桌面散落着空咖啡杯和方便面碗，窗外是凌晨城市灯火，荧光灯管闪烁发出嗡嗡声。</span></div>
+<div class="scene-item"><strong>[数据流虚空]</strong><span class="scene-desc">纯黑背景中无数蓝绿色数据流像瀑布般倾泻，半透明代码字符飘浮旋转，远处有一个巨大的金色光门，四周静谧但低频嗡鸣持续。</span></div>
+<div class="scene-item"><strong>[清风宗山门-日]</strong><span class="scene-desc">巍峨青山之巅，白玉石阶通向云端，两侧古松参天，山门牌坊上刻"清风宗"三个金字，晨雾缭绕间可见远处飞瀑和若隐若现的亭台楼阁，偶有仙鹤掠过。</span></div>
+<div class="scene-item"><strong>[灵根测试广场-日]</strong><span class="scene-desc">清风宗大广场，青石铺地中央放着一座三米高的水晶棱柱（灵根测试碑），棱柱表面流动着淡蓝色光纹，四周围满了穿各色道袍的弟子，背景是宗门大殿飞檐翘角。</span></div>
+<div class="scene-item"><strong>[练功房-夜]</strong><span class="scene-desc">清风宗外门弟子简陋石室，三米见方灰石墙壁，角落铺着草席和薄被，中央地面刻有简单阵法纹路发着微弱光芒，唯一光源是墙上一盏油灯，门是粗木板门。</span></div>
+<div class="scene-item"><strong>[竹林小径-日]</strong><span class="scene-desc">清风宗后山密竹林间小径，斑驳阳光穿过竹叶洒在石板路上，两侧翠竹摇曳，远处传来泉水叮咚声，空气中有薄雾和飘散的竹叶。</span></div>
+</div>
+</details>
+
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 1</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [996办公室-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面中央偏左，坐在工位椅上，身体前倾，左手撑着额头，右手搭在键盘上，视线看向显示器。穿灰色连帽卫衣搭牛仔裤，帽衫领口被汗浸湿。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>凌晨三点的办公室只剩一盏台灯亮着，<span class="char-tag" style="color:#e74c3c">[陈默]</span>瘫坐在工位上，左手撑住额头，指缝间渗出冷汗，显示器上模型训练的损失曲线死活降不下去，右手无力地搭在键盘上。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>右手颤抖着按下回车键，嘴唇干裂，自言自语：<span class="dialogue">“再跑一轮……最后一轮……”</span>桌面上散落着五个空咖啡杯和两碗干涸的泡面残渣。</div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>眼前突然一阵剧烈眩晕，左手猛地捂住胸口，嘴巴张大想呼吸但吸不进空气，身体从椅子上向左侧滑倒，视线看向天花板的荧光灯管。</div>
+
+  </div>
+  <div class="camera-line">🎥 中景正面→特写手部颤抖→中景侧面倒下，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 2</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [数据流虚空] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面中央，漂浮在数据流虚空中，身体微微蜷缩呈胎儿姿势，双手抱膝，视线茫然看向下方无底深渊。穿灰色连帽卫衣（前世服装）。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>纯黑虚空中蓝绿色数据流如瀑布倾泻而下，<span class="char-tag" style="color:#e74c3c">[陈默]</span>漂浮其中身体蜷缩，周围半透明代码字符飘浮旋转擦过他的肩膀和手臂，面部表情茫然，眼神空洞。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>缓缓伸出右手去触碰一段飘过的代码字符，指尖刚触及代码就化为光点散开，他双眼微睁，嘴唇颤动：<span class="dialogue">“ 我……死了？”</span></div>
+<div class="part-line"><span class="part-num">P3</span>远处一道金色光门缓缓裂开，强烈金光照亮<span class="char-tag" style="color:#e74c3c">[陈默]</span>的脸庞，他抬起头眯眼看向光门方向，身体不由自主地被吸引过去，数据流汇聚成巨大漩涡将他卷入。</div>
+
+  </div>
+  <div class="camera-line">🎥 全景俯瞰漂浮→中景伸手触碰→全景金光门打开吸入，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 3</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [清风宗山门-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面右侧偏下，仰面躺在白玉石阶底部，双手摊开，视线看向天空。穿青灰色粗布道袍（重生后）。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>刺目的阳光穿过晨雾照在<span class="char-tag" style="color:#e74c3c">[陈默]</span>脸上，他仰面躺在白玉石阶底部，双手摊开，眼睛被阳光刺得不断眨动，一只仙鹤从头顶飞过投下短暂阴影。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>猛地坐起身，左手撑地右手摸向胸口——心跳有力地撞击掌心。他低头看到自己穿着粗布道袍，双手摊开翻来覆去地看，十指修长没有茧。</div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>抬头看向山门牌坊上<span class="dialogue">“清风宗”</span>三个金字，嘴角不自觉抽搐，眉头拧成一团，喃喃道：<span class="dialogue">“这什么……修仙游戏界面？服务器在哪？”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 仰拍天空→平拍坐起身→仰拍山门牌坊，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 4</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [灵根测试广场-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#2ecc71">[赵天行]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧，站立于水晶棱柱前，双手贴在棱柱表面，视线看向棱柱内部的光纹。穿青灰色外门道袍。</div><div class="ps-item">**<span class="char-tag" style="color:#2ecc71">[赵天行]</span>**: 画面右后方人群前排，双手抱胸，下巴微扬，视线斜视<span class="char-tag" style="color:#e74c3c">[陈默]</span>方向。穿白色金边道袍，腰悬青锋剑。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>大广场上数十名弟子围成半圆，<span class="char-tag" style="color:#e74c3c">[陈默]</span>站在水晶棱柱前双手贴上表面，棱柱内蓝色光纹微微波动了一下随即暗淡下去，表面浮现出<span class="dialogue">“兼容率：0.01%”</span>几个血红色小字。</div>
+<div class="part-line"><span class="part-num">P2</span>人群中爆发出哄笑声，<span class="char-tag" style="color:#2ecc71">[赵天行]</span>站在前排双手抱胸，嘴角向右歪出一个不屑的弧度，偏头对身旁弟子低声说话但声音故意让<span class="char-tag" style="color:#e74c3c">[陈默]</span>听见：<span class="dialogue">“万年不遇的废材，连编译都过不了。”</span></div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>盯着<span class="dialogue">“0.01%”</span>三个字，双手缓缓从棱柱表面放下，脸上没有沮丧反而嘴角微微上翘，眼中闪过一丝精光，低声自语：<span class="dialogue">“0.01%……GPT-1的准确率也就这样。调调参数不就行了？”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 全景广场→中景赵天行嘲笑→特写陈默面部微笑，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 5</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [灵根测试广场-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#2ecc71">[赵天行]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧，转身背对棱柱，双手插在道袍袖子里，视线看向石板地面，面带似笑非笑。</div><div class="ps-item">**<span class="char-tag" style="color:#2ecc71">[赵天行]</span>**: 画面右侧两步远处，右手握剑柄，身体前倾，视线瞪向<span class="char-tag" style="color:#e74c3c">[陈默]</span>。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>转身背对水晶棱柱，双手插进袖子里，肩膀微耸一副无所谓的样子，慢悠悠往人群外走，擦过<span class="char-tag" style="color:#2ecc71">[赵天行]</span>身边时脚步没停。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#2ecc71">[赵天行]</span>右手猛地握住剑柄向前一步，下颌绷紧，双眉倒竖瞪向<span class="char-tag" style="color:#e74c3c">[陈默]</span>后背：<span class="dialogue">“站住！废材也敢在大师兄面前摆脸色？”</span></div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>没有回头，只是微微侧了一下脸，露出半边带着黑眼圈的眼睛和一抹淡淡的笑，轻声说：<span class="dialogue">“师兄别急，等我调完参再来找你聊。”</span>说完加快脚步离开，留下赵天行原地咬牙。</div>
+
+  </div>
+  <div class="camera-line">🎥 跟拍陈默走过→侧面中景赵天行握剑→背面跟拍陈默离开，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 6</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [练功房-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面中央，盘腿坐在阵法纹路中心，双手结印放在膝盖上，微闭双眼，视线透过半闭的眼缝看向身前空气中的淡蓝色数据流。穿青灰色道袍，袖子挽到肘部。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>石室内油灯昏黄，<span class="char-tag" style="color:#e74c3c">[陈默]</span>盘腿坐在地面阵法中心，双手结印搭在膝上，微闭双眼。突然他身前空气中涌现出肉眼可见的淡蓝色数据流——一行行半透明代码字符缓缓浮现旋转。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>猛地睁开双眼，瞳孔中倒映着蓝绿色代码光芒，嘴角咧开露出程序员看到漂亮代码时特有的兴奋笑容，双手从膝上抬起在空中比划，像在操作虚拟键盘。</div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>右手食指在空中点了一下，一段代码字符重新排列组合，阵法纹路猛地亮起刺目白光，他兴奋到声音发颤：<span class="dialogue">“果然……修炼本质是编译。这功法底层就是个没优化过的排序算法！”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 全景石室→特写眼睛代码倒影→中景空中操作代码，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 7</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [练功房-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面中央，盘腿坐在阵法中心，身体周围环绕着越来越密集的蓝绿色数据流漩涡，双手在空中快速比划如打字。闭眼，面部肌肉微微抽动。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>闭眼盘坐，双手在空中飞速比划，身周蓝绿色数据流越聚越密形成漩涡，代码字符重组速度肉眼几乎跟不上——他在用梯度下降法重写功法的核心循环。</div>
+<div class="part-line"><span class="part-num">P2</span>石室地面阵法纹路从微弱变为耀眼金白色，灵气波动一圈一圈向外扩散震得油灯晃动，墙壁上细碎石屑簌簌落下。<span class="char-tag" style="color:#e74c3c">[陈默]</span>牙关紧咬，额头青筋暴起。</div>
+<div class="part-line"><span class="part-num">P3</span><span class="dialogue">“砰”</span>的一声闷响，<span class="char-tag" style="color:#e74c3c">[陈默]</span>周身爆发出一道白色冲击波，数据流瞬间凝固又碎裂如玻璃渣散落。他猛地睁眼大口喘气，低头看向自己双手——手掌中有微弱蓝光流转。喃喃道：<span class="dialogue">“编译期……一层、二层、三层——一夜三连跳。”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 中景双手打字→全景阵法爆发→特写双手蓝光，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 8</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [灵根测试广场-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#2ecc71">[赵天行]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧，站立，双手插袖，微驼背，视线平视<span class="char-tag" style="color:#2ecc71">[赵天行]</span>。穿青灰色道袍，袖子挽起。</div><div class="ps-item">**<span class="char-tag" style="color:#2ecc71">[赵天行]</span>**: 画面右侧三米处，右手握剑出鞘半寸，左脚前弓步，视线瞪向<span class="char-tag" style="color:#e74c3c">[陈默]</span>。穿白色金边道袍。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>广场上弟子们再次聚集围成圈，<span class="char-tag" style="color:#2ecc71">[赵天行]</span>右手握剑出鞘半寸，寒光一闪，左脚前弓步指向<span class="char-tag" style="color:#e74c3c">[陈默]</span>方向，浓眉紧锁怒吼：<span class="dialogue">“废材一夜到编译期三层？一定是作弊！我要当众验证！”</span></div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>双手插在袖子里，身体重心偏左站着像在排队等奶茶，面无表情地看着<span class="char-tag" style="color:#2ecc71">[赵天行]</span>拔剑，嘴角微动：<span class="dialogue">“师兄，比试可以。不过我建议你先评估一下时间复杂度。”</span></div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#2ecc71">[赵天行]</span>闻言脸色涨红，青筋从脖子爬上太阳穴，猛地将剑完全抽出，剑身白光大放，怒喝：<span class="dialogue">“少跟我说你那些歪门邪道的黑话！看剑！”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 全景对峙→中景陈默淡定→中景赵天行拔剑，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 9</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [灵根测试广场-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#2ecc71">[赵天行]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#2ecc71">[赵天行]</span>**: 画面右侧，腾空跃起一米高，双手握剑高举过头，全身笼罩白色剑气，视线向下看向<span class="char-tag" style="color:#e74c3c">[陈默]</span>。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧偏下，右手从袖中伸出掌心朝上，面前浮现半透明蓝色代码矩阵，视线平视<span class="char-tag" style="color:#2ecc71">[赵天行]</span>。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class="char-tag" style="color:#2ecc71">[赵天行]</span>双手握剑高举腾空跃起，白色剑气化为无数光点向<span class="char-tag" style="color:#e74c3c">[陈默]</span>方向暴风骤雨般覆盖过去——这是暴力穷举式的攻击，铺天盖地没有死角。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>右手从袖中伸出掌心朝上，面前凝聚出一面半透明蓝色代码矩阵，数据流快速运算——A*搜索算法启动，在密集剑气中精准定位三个最弱节点。</div>
+<div class="part-line"><span class="part-num">P3</span>三道精准的蓝色光束从代码矩阵中射出，穿过剑气风暴直击三个弱点，白色剑气像玻璃般从裂缝处碎裂崩塌。<span class="char-tag" style="color:#e74c3c">[陈默]</span>嘴角微扬：<span class="dialogue">“O(n²)打不过O(log n)的，这是常识。”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 仰拍赵天行腾空→正面中景陈默代码矩阵→全景剑气崩塌，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 10</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [灵根测试广场-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#2ecc71">[赵天行]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#2ecc71">[赵天行]</span>**: 画面右侧，单膝跪地，左手撑地右手仍握剑但剑尖触地，喘着粗气，视线不甘地看向<span class="char-tag" style="color:#e74c3c">[陈默]</span>。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧，站立不动，双手已重新插回袖中，视线俯视<span class="char-tag" style="color:#2ecc71">[赵天行]</span>方向。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class="char-tag" style="color:#2ecc71">[赵天行]</span>被反震力弹落在地，单膝跪下左手撑住青石地面，右手握剑但剑尖无力触地，胸口剧烈起伏喘着粗气，抬头瞪向<span class="char-tag" style="color:#e74c3c">[陈默]</span>，牙齿咬得咯咯响。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#2ecc71">[赵天行]</span>不甘地嘶吼：<span class="dialogue">“你这叫什么路子！修仙讲的是天道正统，你那叫什么？面向对象修仙？！”</span>声音在广场上回荡，围观弟子鸦雀无声。</div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>双手插回袖中，微微歪了一下头，眉毛挑起，嘴角慢慢弯出一个欠揍的弧度：<span class="dialogue">“面向对象怎么了？至少我不用指针。”</span>围观人群中几个偷笑声压不住地传来。</div>
+
+  </div>
+  <div class="camera-line">🎥 俯拍赵天行跪地→正面中景赵天行嘶吼→特写陈默歪头微笑，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 11</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [竹林小径-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#3498db">[苏灵]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏灵]</span>**: 画面右侧，快步走来拦在小径中间，右手握着发黄古籍，左手提着布包（叮当响），视线紧盯<span class="char-tag" style="color:#e74c3c">[陈默]</span>。穿水蓝色道袍。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧，双手插袖慢悠悠走着，被拦后停步，视线从地面抬起看向<span class="char-tag" style="color:#3498db">[苏灵]</span>。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>斑驳阳光穿过竹叶洒在石板路上，<span class="char-tag" style="color:#e74c3c">[陈默]</span>双手插袖慢悠悠走着哼着不成调的曲子，<span class="char-tag" style="color:#3498db">[苏灵]</span>从侧面竹林中快步跑出拦在他面前，布包里丹药瓶叮当响。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#3498db">[苏灵]</span>右手举起发黄古籍怼到<span class="char-tag" style="color:#e74c3c">[陈默]</span>面前一厘米处，丹凤眼瞪得滚圆，鼻梁微皱，语速极快：<span class="dialogue">“你就是那个一夜三连跳的陈默？我的丹方优化遇到瓶颈，听说你有……奇怪的方法。”</span></div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>后仰脖子躲开古籍，眯眼打量<span class="char-tag" style="color:#3498db">[苏灵]</span>从头到脚又看了一眼她肩上鼓鼓的布包，嘴角微动：<span class="dialogue">“你这个布包里……几种丹药？”</span> <span class="char-tag" style="color:#3498db">[苏灵]</span>警惕地护住包：<span class="dialogue">“十七种，跟你什么关系？”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 全景竹林偶遇→中景苏灵举书→双人中景对话，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 12</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [竹林小径-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#3498db">[苏灵]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧，蹲在地上，右手在苏灵摊开的古籍上方悬空比划，视线看向古籍。</div><div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏灵]</span>**: 画面右侧，蹲在陈默对面，双手展开古籍放在两人中间的石板上，视线看向<span class="char-tag" style="color:#e74c3c">[陈默]</span>的手指动作，表情从怀疑转为震惊。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>蹲下来，<span class="char-tag" style="color:#3498db">[苏灵]</span>在对面蹲下将古籍摊开放在石板上，陈默右手悬在丹方上方缓缓移动，眼中浮现出淡蓝色数据流——他在用机器学习扫描丹方配比。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>右手食指在古籍上画出三个圆圈标记，头也不抬地说：<span class="dialogue">“你这个配方用的是穷举法对吧？三种灵草排列组合试了……上百次？”</span> <span class="char-tag" style="color:#3498db">[苏灵]</span>瞳孔收缩，下意识点头。</div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>嘴角一歪露出得意的表情，食指在三个圆圈之间画出箭头连线：<span class="dialogue">“换成梯度下降，三步收敛。你的丹药品质至少翻倍。”</span> <span class="char-tag" style="color:#3498db">[苏灵]</span>嘴巴微张，手指捏着布包带子指节发白。</div>
+
+  </div>
+  <div class="camera-line">🎥 俯拍两人蹲对面看书→特写手指画圈→中景苏灵震惊表情，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 13</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [竹林小径-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#3498db">[苏灵]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏灵]</span>**: 画面右侧，从蹲姿猛地站起，双手握拳贴在胸前，瞪大双眼，视线看向<span class="char-tag" style="color:#e74c3c">[陈默]</span>。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧，仍蹲在地上，右手撑着下巴，视线微微仰看<span class="char-tag" style="color:#3498db">[苏灵]</span>。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class="char-tag" style="color:#3498db">[苏灵]</span>猛地从蹲姿弹起来站直，双手握拳贴在胸前，丹凤眼瞪得像铜铃，嘴唇微颤想说话又说不出——她用三个月试了上百次的配比，这个人三分钟就看穿了底层逻辑。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#3498db">[苏灵]</span>深吸一口气平复表情但声音还是带着颤抖：<span class="dialogue">“你……你怎么做到的？这不可能，丹方优化没有捷径，前辈们都是这么——”</span></div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>仍蹲在地上右手撑着下巴，仰头看向<span class="char-tag" style="color:#3498db">[苏灵]</span>，眼底带着程序员特有的淡定与自信：<span class="dialogue">“别激动。这只是v0.1，还没做AB测试呢。”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 低角度仰拍苏灵站起→正面中景苏灵激动→低角度陈默仰视回应，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 14</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [练功房-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面中央，盘腿坐在阵法中心，双手结印，身周环绕蓝绿色数据流正常运转，突然数据流中出现刺目红色代码段像裂缝撕开，视线从冥想中睁开看向红色裂缝。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>深夜石室，<span class="char-tag" style="color:#e74c3c">[陈默]</span>盘腿修炼，身周蓝绿色数据流平稳运转如溪水。突然一段刺目红色代码像裂缝一样从数据流中撕开，伴随着刺耳的低频嗡鸣。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>猛地睁开双眼，瞳孔收缩，右手下意识伸向红色裂缝但在距离十厘米处停住——裂缝内翻涌着混沌的黑红色数据，像腐烂的代码在扩散。他额头冒出冷汗。</div>
+<div class="part-line"><span class="part-num">P3</span>红色裂缝扩大到一人宽，石室墙壁开始震动碎裂，油灯被气浪吹灭只剩裂缝发出的暗红光。<span class="char-tag" style="color:#e74c3c">[陈默]</span>后撤半步单膝跪地，双手在空中飞速比划试图分析结构。</div>
+
+  </div>
+  <div class="camera-line">🎥 中景平稳修炼→特写红色裂缝撕开→全景石室震动，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 15</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [练功房-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#3498db">[苏灵]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面中央偏左，单膝跪地，双手在空中操作半透明蓝色诊断界面，视线看向红色裂缝中的错误代码。大汗淋漓。</div><div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏灵]</span>**: 画面右侧门口，双手撑门框，身体前倾半步踏入，视线惊恐地看向石室中央的红色裂缝。穿水蓝色道袍，头发被气浪吹散。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class="char-tag" style="color:#3498db">[苏灵]</span>从外面撞开木板门冲进来，被石室内的景象吓得脚步一顿——红色裂缝悬浮在空中嗡嗡作响，碎石乱飞。她惊恐大喊：<span class="dialogue">“天劫的前兆！快跑！”</span></div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>没有跑，反而双手在空中展开一个半透明蓝色诊断界面，逐行扫描红色代码，汗珠从下巴滴落在地面。<span class="char-tag" style="color:#3498db">[苏灵]</span>抓住他肩膀用力摇晃：<span class="dialogue">“你疯了吗这是天劫不是程序崩溃！”</span></div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>头也不回，右手食指在诊断界面上快速滑动，眉头紧锁但嘴角竟然微微上翘，声音反常地冷静：<span class="dialogue">“本质上……是一样的。先看报错信息。”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 中景苏灵冲入→双人中景苏灵摇晃陈默→特写陈默诊断界面+微笑，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 16</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [练功房-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#3498db">[苏灵]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面中央，从跪姿缓缓站起，双手停止操作垂在身侧，视线直直盯着诊断界面上一行金色代码，面部表情从专注变为震惊再变为难以置信。</div><div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏灵]</span>**: 画面左后方，双手攥着陈默的道袍后摆，视线顺着陈默目光看向诊断界面，表情困惑。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>红色裂缝突然自行收缩消失，石室恢复寂静只剩两人急促的呼吸声。<span class="char-tag" style="color:#e74c3c">[陈默]</span>面前的诊断界面上，所有红色报错代码消退，只留下最底层一行金色字符在缓缓闪烁。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>缓缓站起身，双手垂在身侧微微颤抖，瞳孔放大死死盯着那行金色代码——那不是这个世界的原生代码，而是一个被刻意封印的……管理员账号登录入口。</div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#3498db">[苏灵]</span>凑到<span class="char-tag" style="color:#e74c3c">[陈默]</span>身旁踮脚看向界面，困惑地皱眉：<span class="dialogue">“这是什么？我看不懂……”</span> <span class="char-tag" style="color:#e74c3c">[陈默]</span>喉结滚动吞咽口水，声音压得极低极沉：<span class="dialogue">“这个世界的底层代码里……有人留了一个后门。而且用的是……Python。”</span></div>
+
+  </div>
+  <div class="camera-line">🎥 全景裂缝消失→特写金色代码闪烁→双人中景震惊表情，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 17</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [练功房-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[陈默]</span>, <span class="char-tag" style="color:#3498db">[苏灵]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[陈默]</span>**: 画面左侧，背靠石墙缓缓滑坐在地上，双腿伸直，双手搭在膝盖上，视线看向石室天花板某个虚无的方向，面部表情复杂——震惊、兴奋、恐惧交织。</div><div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏灵]</span>**: 画面右侧，蹲在<span class="char-tag" style="color:#e74c3c">[陈默]</span>旁边，左手轻轻搭在他小臂上，视线担忧地看向<span class="char-tag" style="color:#e74c3c">[陈默]</span>的侧脸。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>背靠石墙滑坐在地上，双腿伸直，把脸埋进双手间沉默了五秒。然后他缓缓抬起头，露出一个复杂到无法形容的表情——既像发现新大陆的兴奋，又像窥见深渊的恐惧。</div>
+<div class="part-line"><span class="part-num">P2</span><span class="char-tag" style="color:#3498db">[苏灵]</span>蹲在旁边左手搭上他小臂，担忧地低声问：<span class="dialogue">“陈默？你还好吗？那个金色的东西到底——”</span></div>
+<div class="part-line"><span class="part-num">P3</span><span class="char-tag" style="color:#e74c3c">[陈默]</span>转头看向<span class="char-tag" style="color:#3498db">[苏灵]</span>，嘴唇微动，声音像从胸腔深处挤出来：<span class="dialogue">“我不是第一个穿越来的人。上一个人……在这个世界的底层，留了一个管理员账号。”</span> 石室外远处传来晨钟声，油灯重新亮起，火焰在两人凝固的表情间跳动。</div>
+
+  </div>
+  <div class="camera-line">🎥 中景陈默埋脸→双人中景苏灵关切→特写陈默开口+油灯火焰，正常速度。</div>
+</div>
+
+
+</div>
+
+<script>
+// Auto-open first segment's physical state on load (optional interactivity)
+document.addEventListener('DOMContentLoaded', function() {
+  // Smooth scroll spy - highlight current segment
+  const cards = document.querySelectorAll('.segment-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.borderColor = 'rgba(88,166,255,0.5)';
+      } else {
+        e.target.style.borderColor = '';
+      }
+    });
+  }, { threshold: 0.3 });
+  cards.forEach(c => observer.observe(c));
+});
+</script>
+</body>
+</html>
