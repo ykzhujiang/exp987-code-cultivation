@@ -1,0 +1,29 @@
+{
+  "project": "exp987-code-cultivation",
+  "created_at": "2026-04-07T06:07:52.707991+00:00",
+  "github_repo": "ykzhujiang/exp987-code-cultivation",
+  "config": {
+    "theme": "代码修仙录：程序员陈默996猝死重生修仙世界，灵气是数据流，法术是算法，用AI经验碾压传统修仙",
+    "genre": "修仙×AI创业×搞笑",
+    "style": "realistic",
+    "duration": 60,
+    "characters": 2,
+    "setting": "Chinese fantasy with cyber undertones",
+    "appearance": "East Asian"
+  },
+  "status": "not_started",
+  "steps": {
+    "step1b": {
+      "status": "not_started"
+    },
+    "step3": {
+      "status": "not_started"
+    },
+    "step4": {
+      "status": "not_started"
+    },
+    "step6": {
+      "status": "not_started"
+    }
+  }
+}
